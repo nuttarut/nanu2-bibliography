@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nanu2 - ตัวจัดเรียงบรรณานุกรม</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Sarabun', sans-serif;
+        }
+        .logo {
+            position: absolute;
+            top: 8px;
+            left: 10px;
+            width: 80px; /* ปรับขนาดให้เหมาะสม */
+            height: auto;
+        }
+    </style>
+</head>
+<body class="bg-red-100 text-gray-900 flex flex-col items-center min-h-screen relative">
+    <img src="logo-3.png" alt="Logo" class="logo">
+    
+    <header class="w-full bg-red-500 py-10 text-center text-white text-2xl font-bold shadow-md">
+        Nanu2 - ตัวจัดเรียงบรรณานุกรม
+    </header>
+    
+    <section class="w-full max-w-2xl text-center mt-8 px-4">
+        <h2 class="text-xl font-semibold text-red-600">📚 ยินดีต้อนรับสู่ Nanu2</h2>
+        <p class="mt-2 text-gray-700">เว็บนี้ช่วยคุณจัดเรียงบรรณานุกรมตามหลักภาษาไทยได้ง่ายๆ เพียงแค่ป้อนข้อมูลหรือนำเข้าไฟล์ PDF ระบบจะทำการเรียงลำดับให้อัตโนมัติ 🎉</p>
+    </section>
+
+    <div class="bg-white p-6 rounded-lg shadow-lg w-full max-w-lg mt-6 border border-red-300">
+        <h2 class="text-xl font-bold text-center mb-4 text-red-600">จัดเรียงบรรณานุกรม</h2>
+        
+        <p><strong>วิธีใช้:</strong></p>
+        <ul class="list-disc list-inside text-gray-700">
+            <li>ป้อนข้อมูลแต่ละรายการโดยใช้ <strong>" / "</strong> เพื่อแบ่งแต่ละส่วน เช่น:</li>
+            <pre class="bg-red-50 p-2 rounded">ผู้แต่ง / ปีที่พิมพ์ / ชื่อเรื่อง / สำนักพิมพ์</pre>
+            <li>เลือกประเภทแหล่งข้อมูลจากเมนูแบบเลื่อนลง</li>
+            <li>กดปุ่ม "จัดเรียง" เพื่อให้โปรแกรมจัดเรียงตามลำดับที่ถูกต้อง</li>
+            <li>กดปุ่ม "คัดลอก" เพื่อคัดลอกผลลัพธ์ไปใช้งาน</li>
+            <li>สามารถอัปโหลดไฟล์ PDF เพื่อให้โปรแกรมช่วยดึงข้อมูลและจัดรูปแบบให้อัตโนมัติ</li>
+        </ul>
+
+        <label for="typeSelect" class="block text-red-600 font-semibold mt-4">เลือกประเภทแหล่งข้อมูล:</label>
+        <select id="typeSelect" class="w-full p-2 mt-2 rounded bg-red-50 text-gray-900 border border-red-300">
+            <option value="book">หนังสือ</option>
+            <option value="article">บทความหรือบทความในหนังสือ</option>
+            <option value="ebook">E-book</option>
+            <option value="thesis">วิทยานิพนธ์</option>
+            <option value="website">จากเว็บไซต์</option>
+            <option value="journal">วารสาร (เล่ม)</option>
+            <option value="journalOnline">วารสารออนไลน์ (ไม่มี DOI)</option>
+            <option value="journalDOI">วารสารออนไลน์ (มี DOI)</option>
+        </select>
+        
+        <textarea id="input" class="w-full p-3 mt-3 rounded bg-red-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-red-400" rows="4" placeholder="ป้อนข้อมูลบรรณานุกรม..."></textarea>
+        
+        <input type="file" id="pdfInput" accept="application/pdf" class="mt-3 w-full text-sm text-gray-700 file:mr-3 file:py-2 file:px-4 file:rounded file:border-none file:bg-red-500 file:text-white hover:file:bg-red-600">
+        
+        <button onclick="sortBibliography()" class="mt-4 w-full bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded transition">🔍 จัดเรียง</button>
+        
+        <h3 class="text-lg font-semibold mt-4 text-red-600">ผลลัพธ์</h3>
+        <pre id="output" class="bg-red-50 p-3 rounded text-gray-900 mt-2 overflow-auto max-h-40 border border-red-300"></pre>
+        
+        <button onclick="copyToClipboard()" class="mt-4 w-full bg-red-400 hover:bg-red-500 text-white font-bold py-2 px-4 rounded transition">📋 คัดลอก</button>
+    </div>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
