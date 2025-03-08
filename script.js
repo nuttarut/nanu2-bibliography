@@ -25,23 +25,24 @@ function parseEntry(parts) {
     let entry = {
         author: parts[0] || "",
         year: parts[1] || "",
-        title: parts[2] || "",
+        title: parts.find((p, i) => i > 1 && !p.includes("มหาวิทยาลัย")) || "", // ✅ กันไม่ให้ชื่อมหาวิทยาลัยไปอยู่ใน title
+        journal: parts[3] || "",  // ✅ ชื่อวารสาร
+        pages: parts[4] || "",
+        volume: parts[5] || "",   // ✅ ฉบับที่
+        issue: parts[7] || "",    // ✅ เลขที่
+        url: parts.find(p => p.startsWith("http") || p.includes("www.")) || "", // ✅ ดึง URL หรือเว็บไซต์
         editor: "",
         bookTitle: "",
         edition: parts.find(p => /^ครั้งที่ \d+$/.test(p)) || "",
-        pages: parts[6] || "",
         publisher: parts.find(p => /สำนักพิมพ์/.test(p)) || "",
-        university: parts[8] || "",
+        university: parts.find(p => p.includes("มหาวิทยาลัย")) || "",
         thesisType: parts[9] || "",
-        website: parts[10] || "",
-        url: parts[11] || "",
-        journal: parts[12] || "",
-        volume: parts[13] || "",
-        issue: parts[14] || "",
-        doi: parts[15] || "",
+        website: parts.find(p => p.startsWith("http") || p.includes("www.")) || "", // ✅ ดึงเว็บไซต์
         place: parts.find(p => isProvince(p)) || ""
     };
 
+    console.log("Parsed Entry:", entry); // ✅ Debugging
+    
     // ✅ เพิ่ม: ตรวจจับชื่อบรรณาธิการและชื่อหนังสือ (ถ้ามี "(บ.ก.)")
     let editorIndex = parts.findIndex(p => p.includes("(บ.ก.)"));
     if (editorIndex !== -1 && editorIndex + 1 < parts.length) {
@@ -59,12 +60,14 @@ function parseEntry(parts) {
     let publisherIndex = parts.findIndex(p => /สำนักพิมพ์/.test(p) && p !== entry.pages);
     if (publisherIndex !== -1) {
         entry.publisher = parts[publisherIndex];
+        
     }
 
     return entry;
 }
 
 function formatEntry(e, type) {
+    let formatted = "";
     switch (type) {
         case "book":
             return `${e.author}. (${e.year}). <i>${e.title}</i> (${e.edition}). ${e.publisher}.`;
@@ -75,16 +78,14 @@ function formatEntry(e, type) {
         case "thesis":
             return `${e.author}. (${e.year}). ${e.title} [${e.thesisType} ไม่ได้ตีพิมพ์]. ${e.university}.`;
         case "website":
-            return `${e.author}. (${e.year}). ${e.title}. ${e.website}. ${e.url}`;
-        case "journal":
-            return `${e.author}. (${e.year}). ${e.title}. <i>${e.journal}</i>, ${e.volume}(${e.issue}), ${e.pages}.`;
+            return `${e.author}. (${e.year}). ${e.title}. ${e.website || e.url}`;
         case "journalOnline":
-            return `${e.author}. (${e.year}). ${e.title}. <i>${e.journal}</i>, ${e.volume}(${e.issue}), ${e.pages}. สืบค้นจาก ${e.url}`;
-        case "journalDOI":
-            return `${e.author}. (${e.year}). ${e.title}. <i>${e.journal}</i>, ${e.volume}(${e.issue}), ${e.pages}. ${e.url}`;
+            return `${e.author}. (${e.year}). ${e.title}. <i>${e.journal || "❌ ไม่มีชื่อวารสาร"}</i>, ${e.volume || "❌ ไม่มีฉบับที่"}, ${e.pages}. สืบค้นจาก ${e.url || "❌ ไม่มี URL"}`;
         default:
             return `${e.author}. (${e.year}). ${e.title}.`;
     }
+    console.log("📌 Formatted Entry:", formatted); // ✅ Debugging ตรวจสอบค่าหลังจัดรูปแบบ
+    return formatted;
 }
 
 function isProvince(text) {
