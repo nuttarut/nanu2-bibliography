@@ -7,8 +7,10 @@ function sortBibliography() {
     let parsedEntries = entries.map(parseEntry);
     
     parsedEntries.sort((a, b) => {
+        let yearA = a.year || "0000"; // ใส่ค่าเริ่มต้น ถ้าไม่มีปี
+        let yearB = b.year || "0000";
         return (
-            b.year.localeCompare(a.year, 'th', { numeric: true }) ||
+            yearB.localeCompare(yearA, 'th', { numeric: true }) ||
             a.author.localeCompare(b.author, 'th') ||
             a.title.localeCompare(b.title, 'th')
         );
@@ -50,25 +52,24 @@ function formatEntry(e, type) {
         case "ebook":
             return `${e.author}. (${e.year}). ${e.title}. ใน ${e.editor} (บรรณาธิการ), <i>${e.bookTitle}</i> (${e.edition}). (น./${e.pages}). ${e.url}`;
         case "thesis":
-            return `${e.author}. (${e.year}). ${e.title} [${e.thesisType}]. ${e.university}.`;
+            return `${e.author}. (${e.year}). ${e.title} [${e.thesisType} ไม่ได้ตีพิมพ์]. ${e.university}.`;
         case "website":
-            return `${e.author}. (${e.year}). ${e.title}. <i>${e.website}</i>. ${e.url}`;
+            return `${e.author}. (${e.year}). ${e.title}. ${e.website}. ${e.url}`;
         case "journal":
-            return `${e.author}. (${e.year}). ${e.title}. <i>${e.journal}</i>, ${e.volume}, (น./${e.pages}).`;
+            return `${e.author}. (${e.year}). ${e.title}. <i>${e.journal}</i>, ${e.volume}(${e.issue}), ${e.pages}.`;
         case "journalOnline":
-            return `${e.author}. (${e.year}). ${e.title}. <i>${e.journal}</i>, ${e.volume}, (น./${e.pages}). สืบค้นจาก ${e.url}`;
+            return `${e.author}. (${e.year}). ${e.title}. <i>${e.journal}</i>, ${e.volume}(${e.issue}), ${e.pages}. สืบค้นจาก ${e.url}`;
         case "journalDOI":
-            return `${e.author}. (${e.year}). ${e.title}. <i>${e.journal}</i>, ${e.volume}, (น./${e.pages}). ${e.url}`;
+            return `${e.author}. (${e.year}). ${e.title}. <i>${e.journal}</i>, ${e.volume}(${e.issue}), ${e.pages}. ${e.url}`;
         default:
             return `${e.author}. (${e.year}). ${e.title}.`;
-        }
+    }
 }
 
 function isProvince(text) {
     let provinces = ["กรุงเทพฯ", "เชียงใหม่", "นนทบุรี", "ขอนแก่น", "ภูเก็ต", "ระยอง", "ชลบุรี", "นครราชสีมา"];
     return provinces.includes(text.replace(/\s+/g, ""));
 }
-
 
 function normalizeText(text) {
     return text.replace(/(\d{4})\s*$/gm, "$1 /")
