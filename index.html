@@ -13,7 +13,7 @@
             position: absolute;
             top: 8px;
             left: 10px;
-            width: 80px; /* ปรับขนาดให้เหมาะสม */
+            width: 80px;
             height: auto;
         }
     </style>
@@ -26,7 +26,7 @@
     </header>
     
     <section class="w-full max-w-2xl text-center mt-8 px-4">
-        <h2 class="text-xl font-semibold text-red-600">📚 ยินดีต้อนรับสู่ Nanu2</h2>
+        <h2 class="text-xl font-semibold text-red-600">📚 ยินดีต้อนรับ</h2>
         <p class="mt-2 text-gray-700">เว็บนี้ช่วยคุณจัดเรียงบรรณานุกรมตามหลักภาษาไทยได้ง่ายๆ เพียงแค่ป้อนข้อมูลหรือนำเข้าไฟล์ PDF ระบบจะทำการเรียงลำดับให้อัตโนมัติ 🎉</p>
     </section>
 
@@ -46,14 +46,19 @@
         <label for="typeSelect" class="block text-red-600 font-semibold mt-4">เลือกประเภทแหล่งข้อมูล:</label>
         <select id="typeSelect" class="w-full p-2 mt-2 rounded bg-red-50 text-gray-900 border border-red-300">
             <option value="book">หนังสือ</option>
-            <option value="article">บทความหรือบทความในหนังสือ</option>
+            <option value="articleInBook">บทความในหนังสือ</option>
             <option value="ebook">E-book</option>
             <option value="thesis">วิทยานิพนธ์</option>
-            <option value="website">จากเว็บไซต์</option>
-            <option value="journal">วารสาร (เล่ม)</option>
-            <option value="journalOnline">วารสารออนไลน์ (ไม่มี DOI)</option>
-            <option value="journalDOI">วารสารออนไลน์ (มี DOI)</option>
+            <option value="website">เว็บไซต์</option>
+            <option value="journal">วารสาร</option>
+            <option value="journalOnline">วารสารออนไลน์</option>
+            <option value="journalDOI">วารสาร (DOI)</option>
         </select>
+
+        <div id="infoBox" class="mt-3 p-3 bg-red-50 text-gray-700 rounded border border-red-300">
+            <p class="font-semibold">📖 หนังสือ:</p>
+            <p>ต้องมีข้อมูล: ผู้แต่ง / ปีที่พิมพ์ / ชื่อเรื่อง / สำนักพิมพ์</p>
+        </div>
         
         <textarea id="input" class="w-full p-3 mt-3 rounded bg-red-50 text-gray-900 focus:outline-none focus:ring-2 focus:ring-red-400" rows="4" placeholder="ป้อนข้อมูลบรรณานุกรม..."></textarea>
         
@@ -66,6 +71,39 @@
         
         <button onclick="copyToClipboard()" class="mt-4 w-full bg-red-400 hover:bg-red-500 text-white font-bold py-2 px-4 rounded transition">📋 คัดลอก</button>
     </div>
+    
+    <script>
+        document.getElementById("typeSelect").addEventListener("change", function() {
+            let info = "";
+            switch (this.value) {
+                case "book":
+                    info = "📖 หนังสือ: ต้องมีข้อมูล: ผู้แต่ง / ปีที่พิมพ์ / ชื่อเรื่อง / สำนักพิมพ์";
+                    break;
+                case "articleInBook":
+                    info = "📄 บทความในหนังสือ: ผู้แต่ง / ปีที่พิมพ์ / ชื่อบทความ / ชื่อหนังสือ / บรรณาธิการ / สำนักพิมพ์";
+                    break;
+                case "ebook":
+                    info = "💻 E-book: ผู้แต่ง / ปีที่พิมพ์ / ชื่อเรื่อง / URL";
+                    break;
+                case "thesis":
+                    info = "🎓 วิทยานิพนธ์: ผู้แต่ง / ปีที่พิมพ์ / ชื่อวิทยานิพนธ์ / มหาวิทยาลัย";
+                    break;
+                case "website":
+                    info = "🌐 เว็บไซต์: ผู้เขียน / วันที่เผยแพร่ / ชื่อเรื่อง / URL";
+                    break;
+                case "journal":
+                    info = "📜 วารสาร: ผู้แต่ง / ปีที่พิมพ์ / ชื่อบทความ / ชื่อวารสาร / ฉบับที่ / เลขหน้า";
+                    break;
+                case "journalOnline":
+                    info = "📄 วารสารออนไลน์: ผู้แต่ง / ปีที่พิมพ์ / ชื่อบทความ / ชื่อวารสาร / ฉบับที่ / เลขหน้า / URL";
+                    break;
+                case "journalDOI":
+                    info = "📑 วารสาร (DOI): ผู้แต่ง / ปีที่พิมพ์ / ชื่อบทความ / ชื่อวารสาร / DOI";
+                    break;
+            }
+            document.getElementById("infoBox").innerHTML = "<p>" + info + "</p>";
+        });
+    </script>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js"></script>
