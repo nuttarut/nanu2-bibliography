@@ -22,15 +22,15 @@ function sortBibliography() {
 }
 
 function parseEntry(parts) {
-    return {
+    let entry = {
         author: parts[0] || "",
         year: parts[1] || "",
         title: parts[2] || "",
-        editor: parts[3] || "",
-        bookTitle: parts[4] || "",
-        edition: parts.find(p => /^ครั้งที่ \d+$/.test(p)) || parts[5] || "",
+        editor: "",
+        bookTitle: "",
+        edition: parts.find(p => /^ครั้งที่ \d+$/.test(p)) || "",
         pages: parts[6] || "",
-        publisher: parts.find(p => /สำนักพิมพ์/.test(p)) || parts[7] || "",
+        publisher: parts.find(p => /สำนักพิมพ์/.test(p)) || "",
         university: parts[8] || "",
         thesisType: parts[9] || "",
         website: parts[10] || "",
@@ -41,6 +41,27 @@ function parseEntry(parts) {
         doi: parts[15] || "",
         place: parts.find(p => isProvince(p)) || ""
     };
+
+    // ✅ เพิ่ม: ตรวจจับชื่อบรรณาธิการและชื่อหนังสือ (ถ้ามี "(บ.ก.)")
+    let editorIndex = parts.findIndex(p => p.includes("(บ.ก.)"));
+    if (editorIndex !== -1 && editorIndex + 1 < parts.length) {
+        entry.editor = parts[editorIndex].replace("(บ.ก.)", "").trim();
+        entry.bookTitle = parts[editorIndex + 1].trim();
+    }
+
+    // ✅ เพิ่ม: ตรวจหาหมายเลขหน้า "(น./xx-xxx)"
+    let pagesIndex = parts.findIndex(p => /\(น\.\d+[-–]\d+\)/.test(p));
+    if (pagesIndex !== -1) {
+        entry.pages = parts[pagesIndex];
+    }
+
+    // ✅ เพิ่ม: ตรวจหาสำนักพิมพ์ (ต้องไม่ใช่หมายเลขหน้า)
+    let publisherIndex = parts.findIndex(p => /สำนักพิมพ์/.test(p) && p !== entry.pages);
+    if (publisherIndex !== -1) {
+        entry.publisher = parts[publisherIndex];
+    }
+
+    return entry;
 }
 
 function formatEntry(e, type) {
@@ -48,9 +69,9 @@ function formatEntry(e, type) {
         case "book":
             return `${e.author}. (${e.year}). <i>${e.title}</i> (${e.edition}). ${e.publisher}.`;
         case "articleInBook":
-            return `${e.author}. (${e.year}). ${e.title}. ใน ${e.editor} (บ.ก.), <i>${e.bookTitle}</i> (น./${e.pages}). ${e.publisher}.`;
+            return `${e.author}. (${e.year}). ${e.title}. ใน ${e.editor} (บ.ก.), <i>${e.bookTitle}</i> ${e.pages}. ${e.publisher}.`;
         case "ebook":
-            return `${e.author}. (${e.year}). ${e.title}. ใน ${e.editor} (บรรณาธิการ), <i>${e.bookTitle}</i> (${e.edition}). (น./${e.pages}). ${e.url}`;
+            return `${e.author}. (${e.year}). ${e.title}. ใน ${e.editor} (บรรณาธิการ), <i>${e.bookTitle}</i> (${e.edition}). ${e.pages}. ${e.url}`;
         case "thesis":
             return `${e.author}. (${e.year}). ${e.title} [${e.thesisType} ไม่ได้ตีพิมพ์]. ${e.university}.`;
         case "website":
