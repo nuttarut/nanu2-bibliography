@@ -28,7 +28,7 @@ function parseEntry(parts) {
         title: parts.find((p, i) => i > 1 && !p.includes("มหาวิทยาลัย")) || "", // ✅ กันไม่ให้ชื่อมหาวิทยาลัยไปอยู่ใน title
         journal: parts[3] || "",  // ✅ ชื่อวารสาร
         pages: parts[4] || "",
-        volume: parts[5] || "",   // ✅ ฉบับที่
+        volume: parts.find(p => /ฉบับที่/.test(p)) || "",   // ✅ ฉบับที่volume: parts.find(p => /ฉบับที่/.test(p)) || "",
         issue: parts[7] || "",    // ✅ เลขที่
         url: parts.find(p => p.startsWith("http") || p.includes("www.")) || "", // ✅ ดึง URL หรือเว็บไซต์
         editor: "",
