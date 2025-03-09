@@ -23,8 +23,8 @@ function sortBibliography() {
 
 function parseEntry(parts) {
     let entry = {
-        author: parts[0] || "",
-        year: parts[1] || "",
+        author: (isNaN(parts[0]) && !parts[0].includes("สำนักพิมพ์")) ? parts[0] : "",  // ✅ ห้ามใส่ "สำนักพิมพ์" เป็นผู้แต่ง
+        year: !isNaN(parts[1]) ? parts[1] : "",   // ✅ ต้องเป็นตัวเลขเท่านั้น
         title: parts.find((p, i) => i > 1 && !p.includes("มหาวิทยาลัย")) || "", // ✅ กันไม่ให้ชื่อมหาวิทยาลัยไปอยู่ใน title
         journal: parts[3] || "",  // ✅ ชื่อวารสาร
         pages: parts[4] || "",
@@ -70,13 +70,11 @@ function formatEntry(e, type) {
     let formatted = "";
     switch (type) {
         case "book":
-            return `${e.author}. (${e.year}). <i>${e.title}</i> (${e.edition}). ${e.publisher}.`;
+            return `${e.author ? e.author + ". " : ""}(${e.year}). <i>${e.title}</i>${e.edition ? " (" + e.edition + ")" : ""}. ${e.publisher}.`;
         case "articleInBook":
             return `${e.author}. (${e.year}). ${e.title}. ใน ${e.editor} (บ.ก.), <i>${e.bookTitle}</i> ${e.pages}. ${e.publisher}.`;
-        case "ebook":
-            return `${e.author}. (${e.year}). ${e.title}. ใน ${e.editor} (บรรณาธิการ), <i>${e.bookTitle}</i> (${e.edition}). ${e.pages}. ${e.url}`;
         case "thesis":
-            return `${e.author}. (${e.year}). ${e.title} [${e.thesisType} ไม่ได้ตีพิมพ์]. ${e.university}.`;
+            return `${e.author}. (${e.year}). ${e.title} [${e.university}]. ${e.website || e.url}`;
         case "website":
             return `${e.author}. (${e.year}). ${e.title}. ${e.website || e.url}`;
         case "journalOnline":
